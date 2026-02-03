@@ -47,7 +47,7 @@ const dataUsers = [
     { user: "user25", pass: "pass25" }
 ];
 
-// 4. LOGIKA LOGIN
+// 4. LOGIKA LOGIN (DENGAN PERBAIKAN DISCONNECT)
 document.getElementById('loginForm').addEventListener('submit', async (e) => {
     e.preventDefault();
     const user = document.getElementById('username').value;
@@ -63,7 +63,15 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
 
         currentUserSession = user;
         const waktu = new Date().toLocaleString('id-ID', { hour: '2-digit', minute: '2-digit' });
-        database.ref('log_online/' + user).set({ username: user, jam: waktu });
+        
+        // REVISI: Simpan ke localStorage buat dipake di page91
+        localStorage.setItem('savedUser', user);
+        
+        const userLogRef = database.ref('log_online/' + user);
+        userLogRef.set({ username: user, jam: waktu });
+
+        // LOGIKA SAKTI: Hanya hapus jika koneksi benar-benar putus (tutup browser)
+        userLogRef.onDisconnect().remove();
 
         if (user === "admin") {
             alert('Mode Owner Aktif!');
@@ -78,7 +86,6 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
 });
 
 // 5. FUNGSI HAPUS RIWAYAT (PERBAIKAN)
-// Fungsi ini harus ada di lingkup global agar bisa dipanggil onclick dari HTML
 window.hapusLogServer = function() {
     if(confirm("Hapus semua riwayat login di server?")) {
         database.ref('log_online').remove()
@@ -138,9 +145,25 @@ function tampilkanLogAdmin() {
     });
 }
 
-// 8. AUTO CLEANUP SAAT KELUAR
-window.addEventListener('beforeunload', () => {
+// 8. AUTO CLEANUP SAAT KELUAR (REVISI: Matikan agar tidak hilang saat pindah halaman)
+/* window.addEventListener('beforeunload', () => {
     if (currentUserSession && currentUserSession !== "admin") {
         database.ref('log_online/' + currentUserSession).remove();
     }
-});
+}); */
+
+// 9. FUNGSI RIWAYAT KLIK TEKS 91
+window.bukaLogPribadi = function() {
+    const userKita = currentUserSession || localStorage.getItem('savedUser');
+    if (!userKita) return alert("Login dulu!");
+    
+    database.ref('riwayat_pribadi/' + userKita).limitToLast(5).once('value', (snapshot) => {
+        let text = `📜 Riwayat Login (${userKita}):\n\n`;
+        if (snapshot.exists()) {
+            snapshot.forEach(child => { text += `• ${child.val().waktu}\n`; });
+            alert(text);
+        } else {
+            alert("Belum ada riwayat.");
+        }
+    });
+};

@@ -1,13 +1,38 @@
 <!DOCTYPE html>
-
 <html>
 <head>
   <meta http-equiv="CONTENT-TYPE" content="text/html; charset=UTF-8">
   <title>91page</title>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
 </head>
 <body>
-  <h1>
-    Testing To lol
-  </h1>
+  <h1>Testing To lol</h1>
+
+  <script>
+    // Konfigurasi Firebase lo (Copy dari script.js)
+    const firebaseConfig = {
+        apiKey: "AIzaSyDlucMVwMUbw7Ab3t2AVzI13EOHUrqDNZw",
+        authDomain: "web-kelas-5b83a.firebaseapp.com",
+        databaseURL: "https://web-kelas-5b83a-default-rtdb.asia-southeast1.firebasedatabase.app",
+        projectId: "web-kelas-5b83a",
+        storageBucket: "web-kelas-5b83a.firebasestorage.app",
+        messagingSenderId: "711947014423",
+        appId: "1:711947014423:web:d8cb787c503d7d7538e752",
+    };
+    firebase.initializeApp(firebaseConfig);
+
+    const userAktif = localStorage.getItem('savedUser');
+    if (userAktif) {
+        const myLogRef = firebase.database().ref('log_online/' + userAktif);
+        const waktu = new Date().toLocaleString('id-ID', { hour: '2-digit', minute: '2-digit' });
+
+        // Update bahwa user sudah di dalam Page 91
+        myLogRef.update({ jam: waktu, status: "Aktif di Page 91" });
+
+        // TETEP PASANG INI: Kalau dia tutup browser di sini, data ilang di admin
+        myLogRef.onDisconnect().remove();
+    }
+  </script>
 </body>
 </html>
