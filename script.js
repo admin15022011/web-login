@@ -11,11 +11,9 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const database = firebase.database();
 
-// DATA USER DEFAULT
 const defaultUsers = [{ user: "9¹", pass: "91" }, { user: "admin", pass: "admin123" }];
 for (let i = 1; i <= 25; i++) { defaultUsers.push({ user: "user" + i, pass: "pass" + i }); }
 
-// LOGIN LOGIC
 document.getElementById('loginForm').addEventListener('submit', async (e) => {
     e.preventDefault();
     const uInput = document.getElementById('username').value.trim();
@@ -46,7 +44,6 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
     } else { alert('User/Pass Salah!'); }
 });
 
-// FITUR TAMBAH USER (FIX GAK BISA DIPENCET)
 window.tambahUserCustom = function() {
     const u = document.getElementById('customUser').value.trim();
     const p = document.getElementById('customPass').value.trim();
@@ -55,7 +52,6 @@ window.tambahUserCustom = function() {
     .then(() => { alert("User " + u + " tersimpan!"); document.getElementById('customUser').value=""; document.getElementById('customPass').value=""; });
 };
 
-// ADMIN PANEL LOGIC
 function tampilkanLogAdmin() {
     document.getElementById('adminPanel').style.display = 'block';
     
